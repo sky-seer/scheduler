@@ -25,7 +25,7 @@ class GatewayData {
   */
   log() {
     console.log(`Data number ${this.id}:`);
-    console.log(`Data : "${this.data}"`);
+    console.log(`Data: "${this.data}"`);
     console.log(`Emitted ${this.date}.`);
   }
 }
