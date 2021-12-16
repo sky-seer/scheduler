@@ -7,7 +7,9 @@ const getData = function() {
   axios.get(gatewayUrl)
       .then(function(response) {
         // handle success
-        console.log(response.data);
+        response.data.forEach((item) => {
+          console.log(item);
+        });
       })
       .catch(function(error) {
         // handle error
