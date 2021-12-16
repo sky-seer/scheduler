@@ -8,7 +8,9 @@ const getData = function() {
       .then(function(response) {
         // handle success
         response.data.forEach((item) => {
-          console.log(item);
+          console.log(item[0]);
+          console.log(item[1]);
+          console.log(item[2]);
         });
       })
       .catch(function(error) {
