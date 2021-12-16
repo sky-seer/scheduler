@@ -3,14 +3,40 @@ const axios = require('axios');
 
 const gatewayUrl = `http://app.objco.com:8099/?account=NTB37PKZUG&limit=10`;
 
+
+/**
+* GatewayData class.
+*/
+class GatewayData {
+  /**
+  * Constructor.
+  * @param {number} id data ID.
+  * @param {string} data raw data.
+  * @param {string} date data date.
+  */
+  constructor(id, data, date) {
+    this.id = id;
+    this.data = data;
+    this.date = date;
+  }
+
+  /**
+  * prints the data to the console.
+  */
+  log() {
+    console.log(`Data number ${this.id}:`);
+    console.log(`Data : "${this.data}"`);
+    console.log(`Emitted ${this.date}.`);
+  }
+}
+
 const getData = function() {
   axios.get(gatewayUrl)
       .then(function(response) {
         // handle success
         response.data.forEach((item) => {
-          console.log(item[0]);
-          console.log(item[1]);
-          console.log(item[2]);
+          const gatewayData = new GatewayData(item[0], item[1], item[2]);
+          gatewayData.log();
         });
       })
       .catch(function(error) {
