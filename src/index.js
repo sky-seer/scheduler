@@ -30,13 +30,18 @@ class GatewayData {
   }
 }
 
+const gatewayDatas = [];
+
 const getData = function() {
   axios.get(gatewayUrl)
       .then(function(response) {
         // handle success
         response.data.forEach((item) => {
           const gatewayData = new GatewayData(item[0], item[1], item[2]);
-          gatewayData.log();
+          gatewayDatas.push(gatewayData);
+        });
+        gatewayDatas.forEach((item) => {
+          item.log();
         });
       })
       .catch(function(error) {
