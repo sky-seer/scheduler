@@ -58,6 +58,7 @@ const getData = function() {
             gatewayDatas.push(gatewayData);
           }
         });
+        console.log('------------------------------');
         gatewayDatas.forEach((item) => {
           item.log();
         });
