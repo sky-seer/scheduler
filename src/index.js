@@ -38,14 +38,13 @@ const gatewayDatas = [];
 
 const checkAlreadyExistingData = function(id) {
   let i = 0;
-  let found = false;
-  while (i < gatewayDatas.length && !found) {
+  while (i < gatewayDatas.length) {
     if (gatewayDatas[i].id === id) {
-      found = true;
+      return true;
     }
     i++;
   }
-  return found;
+  return false;
 };
 
 const getData = function() {
