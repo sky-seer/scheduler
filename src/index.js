@@ -39,7 +39,7 @@ const gatewayDatas = [];
 const checkAlreadyExistingData = function(id) {
   let i = 0;
   let found = false;
-  while (i < gatewayDatas.length) {
+  while (i < gatewayDatas.length && !found) {
     if (gatewayDatas[i].id === id) {
       found = true;
     }
