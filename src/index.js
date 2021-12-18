@@ -1,7 +1,8 @@
 const schedule = require('node-schedule');
 const axios = require('axios');
+const config = require('./config.json');
 
-const gatewayUrl = `http://app.objco.com:8099/?account=NTB37PKZUG&limit=10`;
+const gatewayUrl = config.gatewayUrl;
 
 
 /**
