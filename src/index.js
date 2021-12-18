@@ -1,7 +1,9 @@
+// modules import
 const schedule = require('node-schedule');
 const axios = require('axios');
-const config = require('./config.json');
 
+// configuration file import
+const config = require('./config.json');
 const gatewayUrl = config.gatewayUrl;
 
 
@@ -31,15 +33,30 @@ class GatewayData {
   }
 }
 
+
 const gatewayDatas = [];
+
+const checkAlreadyExistingData = function(id) {
+  let i = 0;
+  let found = false;
+  while (i < gatewayDatas.length) {
+    if (gatewayDatas[i].id === id) {
+      found = true;
+    }
+    i++;
+  }
+  return found;
+};
 
 const getData = function() {
   axios.get(gatewayUrl)
       .then(function(response) {
         // handle success
         response.data.forEach((item) => {
-          const gatewayData = new GatewayData(item[0], item[1], item[2]);
-          gatewayDatas.push(gatewayData);
+          if (!checkAlreadyExistingData(item[0])) {
+            const gatewayData = new GatewayData(item[0], item[1], item[2]);
+            gatewayDatas.push(gatewayData);
+          }
         });
         gatewayDatas.forEach((item) => {
           item.log();
