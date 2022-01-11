@@ -7,34 +7,7 @@ const config = require('./config.json');
 const gatewayUrl = config.gatewayUrl;
 
 
-/**
-* GatewayData class.
-*/
-class GatewayData {
-  /**
-  * Constructor.
-  * @param {number} id data ID.
-  * @param {string} data raw data.
-  * @param {string} date data date.
-  */
-  constructor(id, data, date) {
-    this.id = id;
-    this.data = data;
-    this.date = date;
-  }
 
-  /**
-  * prints the data to the console.
-  */
-  log() {
-    console.log(`Data number ${this.id}:`);
-    console.log(`Data: "${this.data}"`);
-    console.log(`Emitted ${this.date}.`);
-  }
-}
-
-
-const gatewayDatas = [];
 
 const checkAlreadyExistingData = function(id) {
   let i = 0;
@@ -53,7 +26,7 @@ const getData = function() {
         // handle success
         response.data.forEach((item) => {
           if (!checkAlreadyExistingData(item[0])) {
-            const gatewayData = new GatewayData(item[0], item[1], item[2]);
+            const gatewayData = new GatewayRawData(item[0], item[1], item[2]);
             gatewayDatas.push(gatewayData);
           }
         });
@@ -71,4 +44,8 @@ const getData = function() {
       });
 };
 
-schedule.scheduleJob('*/1 * * * *', getData);
+const main = function () {
+  schedule.scheduleJob('*/1 * * * *', getData);
+}
+
+const gatewayDatas = [];
