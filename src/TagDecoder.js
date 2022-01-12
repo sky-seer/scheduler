@@ -21,7 +21,7 @@ class TagDecoder {
         tagHexString.substring(10, 14));
     const temperature = this.convertTemperature(tagHexString.substring(14, 18));
     const humidity = this.convertHumidity(tagHexString.substring(18, 20));
-    const humidityAlertStatus = humidity == 0xFF;
+    const humidityAlertStatus = humidity === 0xFF;
     const rssi = this.convertRssi(tagHexString.substring(20, 22));
 
     return new Tag(id,
@@ -51,7 +51,7 @@ class TagDecoder {
   */
   static convertBatteryVoltageAlertStatus(hexString) {
     const hexValue = parseInt(hexString, 16);
-    return (hexValue & 0x80) == 0x80; // bit 7
+    return (hexValue & 0x80) === 0x80; // bit 7
   }
 
   /**
@@ -61,7 +61,7 @@ class TagDecoder {
   */
   static convertTemperatureAlertStatus(hexString) {
     const hexValue = parseInt(hexString, 16);
-    return (hexValue & 0x40) == 0x40; // bit 6
+    return (hexValue & 0x40) === 0x40; // bit 6
   }
 
   /**
@@ -71,7 +71,7 @@ class TagDecoder {
   */
   static convertAbnormalTemperatureStatus(hexString) {
     const hexValue = parseInt(hexString, 16);
-    return (hexValue & 0x8000) == 0x8000; // bit 15
+    return (hexValue & 0x8000) === 0x8000; // bit 15
   }
 
   /**
@@ -90,7 +90,7 @@ class TagDecoder {
   */
   static convertTemperature(hexString) {
     const hexValue = parseInt(hexString, 16);
-    const isNegative = (hexValue & 0x4000) == 0x4000; // bit 14
+    const isNegative = (hexValue & 0x4000) === 0x4000; // bit 14
     const temperature = (hexValue & 0x3FFF) / 10; // bits 0-13
     return isNegative ? -temperature : temperature;
   }

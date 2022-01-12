@@ -13,9 +13,9 @@ const testGatewayDataRaw = function() {
       gatewayDataElement[0],
       gatewayDataElement[1],
       gatewayDataElement[2]);
-  const check = gatewayDataRaw.id == gatewayDataElement[0] &&
-      gatewayDataRaw.rawData == gatewayDataElement[1] &&
-      gatewayDataRaw.date == gatewayDataElement[2];
+  const check = gatewayDataRaw.id === gatewayDataElement[0] &&
+      gatewayDataRaw.rawData === gatewayDataElement[1] &&
+      gatewayDataRaw.date === gatewayDataElement[2];
   console.log('test GatewayDataRaw instanciation: ' +
      (check ? 'Pass' : 'FAILED'));
 };

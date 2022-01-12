@@ -186,7 +186,7 @@ class GatewayDataDecoder {
   */
   static convertIsConnectedToPower(hexString) {
     const hexValue = parseInt(hexString, 16);
-    return (hexValue & 0x80) == 0x80;
+    return (hexValue & 0x80) === 0x80;
   }
 
   /**
@@ -196,7 +196,7 @@ class GatewayDataDecoder {
   */
   static convertIsLastPacket(hexString) {
     const hexValue = parseInt(hexString, 16);
-    return (hexValue & 0x40) == 0x40;
+    return (hexValue & 0x40) === 0x40;
   }
 
   /**

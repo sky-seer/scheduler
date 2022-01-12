@@ -7,6 +7,8 @@ const config = require('./config.json');
 const gatewayUrl = config.gatewayUrl;
 
 
+const gatewayDataRawArray = [];
+
 const checkAlreadyExistingData = function(id) {
   let i = 0;
   while (i < gatewayDataRawArray.length) {
@@ -46,4 +48,4 @@ const main = function() {
   schedule.scheduleJob('*/1 * * * *', getData);
 };
 
-const gatewayDataRawArray = [];
+main();
