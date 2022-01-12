@@ -24,3 +24,5 @@ class GatewayDataRaw {
         `\tEmitted: ${this.date}.`);
   }
 }
+
+module.exports = GatewayDataRaw;

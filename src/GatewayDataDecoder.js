@@ -1,6 +1,7 @@
-const tag = require('./Tag.js');
-// const gatewaydataraw = require('./GatewayDataRaw.js');
-const gatewaydatadecoded = require('./GatewayDataDecoded.js');
+const Tag = require('./Tag.js');
+const TagDecoder = require('./TagDecoder.js');
+const GatewayDataRaw = require('./GatewayDataRaw.js');
+const GatewayDataDecoded = require('./GatewayDataDecoded.js');
 
 /**
 * GatewayDataDecoder class.
@@ -8,10 +9,10 @@ const gatewaydatadecoded = require('./GatewayDataDecoded.js');
 class GatewayDataDecoder {
   /**
   * converts a GatewayDataRaw object into a GateWayDataDecoded one.
-  * @param {gatewaydataraw.GatewayDataRaw} gatewayDataRaw gateway raw data objet.
-  * @return {gatewaydatadecoded.GatewayDataDecoded} gateway decoded data objet.
+  * @param {GatewayDataRaw} gatewayDataRaw gateway raw data objet.
+  * @return {GatewayDataDecoded} gateway decoded data objet.
   */
-  static convert(gatewayDataRaw) {
+  static decode(gatewayDataRaw) {
     const id = gatewayDataRaw.id;
     const date = gatewayDataRaw.date;
     const rawData = gatewayDataRaw.rawData;
@@ -20,25 +21,38 @@ class GatewayDataDecoder {
     const packetLength = this.convertPacketLength(rawData.substring(4, 8));
     const protocolType = this.convertProtocolType(rawData.substring(8, 12));
     const hardwareType = this.convertHardwareType(rawData.substring(12, 16));
-    const firmwareVersion = this.convertFirmwareVersion(rawData.substring(16, 24));
+    const firmwareVersion = this.convertFirmwareVersion(
+        rawData.substring(16, 24));
     const imei = this.convertImei(rawData.substring(24, 40));
     const rtcTime = this.convertRtcTime(rawData.substring(40, 52));
-    const statusDataLength = this.convertStatusDataLength(rawData.substring(54, 58));
-    const alarmType = this.convertAlarmType(rawData.substring(58, 60));
-    const isConnectedToPower = this.convertIsConnectedToPower(rawData.substring(60, 62));
-    const isLastPacket = this.convertIsLastPacket(rawData.substring(60, 62));
-    const batteryVoltage = this.convertBatteryVoltage(rawData.substring(66, 70));
-    const powerVoltage = this.convertPowerVoltage(rawData.substring(70, 74));
-    const tagInformationDataLength = this.convertTagInformationDataLength(rawData.substring(74, 78));
-    const tagType = this.convertTagType(rawData.substring(78, 80));
-    const tagsNumber = this.convertTagsNumber(rawData.substring(80, 82));
-    const tagLength = this.convertTagLength(rawData.substring(82, 84));
-    const packetIndex = this.convertPacketIndex(rawData.substring(rawDataLength - 12, rawDataLength - 8));
-    const checkCode = this.convertCheckCode(rawData.substring(rawDataLength - 8, rawDataLength - 4));
-    const stopSymbol = this.convertStopSymbol(rawData.substring(rawDataLength - 4, rawDataLength));
-    const rawTagString = rawData.substring(84, rawDataLength - 12);
+    const statusDataLength = this.convertStatusDataLength(
+        rawData.substring(56, 60));
+    const alarmType = this.convertAlarmType(rawData.substring(60, 62));
+    const isConnectedToPower = this.convertIsConnectedToPower(
+        rawData.substring(62, 64));
+    const isLastPacket = this.convertIsLastPacket(rawData.substring(62, 64));
+    const batteryVoltage = this.convertBatteryVoltage(
+        rawData.substring(68, 72));
+    const powerVoltage = this.convertPowerVoltage(rawData.substring(72, 76));
+    const tagInformationDataLength = this.convertTagInformationDataLength(
+        rawData.substring(76, 80));
+    const tagType = this.convertTagType(rawData.substring(80, 82));
+    const tagsNumber = this.convertTagsNumber(rawData.substring(82, 84));
+    const tagLength = this.convertTagLength(rawData.substring(84, 86));
+    const packetIndex = this.convertPacketIndex(
+        rawData.substring(rawDataLength - 12, rawDataLength - 8));
+    const checkCode = this.convertCheckCode(
+        rawData.substring(rawDataLength - 8, rawDataLength - 4));
+    const stopSymbol = this.convertStopSymbol(
+        rawData.substring(rawDataLength - 4, rawDataLength));
+    const rawTagString = rawData.substring(86, rawDataLength - 12);
+    const tags = [];
+    for (let i = 0; i < tagsNumber; i++) {
+      const tagString = rawTagString.substring(i * 22, (i + 1) * 22);
+      tags.push(TagDecoder.decode(tagString));
+    }
 
-    return new gatewaydatadecoded.GatewayDataDecoded(id,
+    return new GatewayDataDecoded(id,
         date,
         startSymbol,
         packetLength,
@@ -71,7 +85,8 @@ class GatewayDataDecoder {
   static convertStartSymbol(hexString) {
     const firstCharHex = hexString.substring(0, 2);
     const secondCharHex = hexString.substring(2, 4);
-    return hexToChar(firstCharHex) + hexToChar(secondCharHex);
+    return GatewayDataDecoder.hexToChar(firstCharHex) +
+        GatewayDataDecoder.hexToChar(secondCharHex);
   }
 
   /**
@@ -91,7 +106,8 @@ class GatewayDataDecoder {
   static convertProtocolType(hexString) {
     const firstCharHex = hexString.substring(0, 2);
     const secondCharHex = hexString.substring(2, 4);
-    return hexToChar(firstCharHex) + hexToChar(secondCharHex);
+    return GatewayDataDecoder.hexToChar(firstCharHex) +
+        GatewayDataDecoder.hexToChar(secondCharHex);
   }
 
   /**
@@ -120,19 +136,29 @@ class GatewayDataDecoder {
   /**
   * converts a hexadecimal string to a gateway's IMEI.
   * @param {string} hexString gateway's raw data as a hexadecimal string.
-  * @return {number} gateway's decoded IMEI.
+  * @return {string} gateway's decoded IMEI.
   */
   static convertImei(hexString) {
-    return parseInt(hexString, 16);
+    return '0x' + hexString;
   }
 
   /**
   * converts a hexadecimal string to a gateway's RTC time.
   * @param {string} hexString gateway's raw data as a hexadecimal string.
-  * @return {number} gateway's decoded RTC time.
+  * @return {string} gateway's decoded RTC time.
   */
   static convertRtcTime(hexString) {
-    return parseInt(hexString, 16);
+    const year = parseInt(hexString.substring(0, 2), 16);
+    const month = parseInt(hexString.substring(2, 4), 16);
+    const day = parseInt(hexString.substring(4, 6), 16);
+    const hour = parseInt(hexString.substring(6, 8), 16);
+    const minutes = parseInt(hexString.substring(8, 10), 16);
+    const secondes = parseInt(hexString.substring(10, 12), 16);
+    return '20' + year + '\\' + month.toString().padStart(2, '0') +
+        '\\' + day.toString().padStart(2, '0') +
+        ' ' + hour.toString().padStart(2, '0') + ':' +
+        minutes.toString().padStart(2, '0') + ':' +
+        secondes.toString().padStart(2, '0');
   }
 
   /**
@@ -160,7 +186,7 @@ class GatewayDataDecoder {
   */
   static convertIsConnectedToPower(hexString) {
     const hexValue = parseInt(hexString, 16);
-    return hexValue & 0x80 == 0x80;
+    return (hexValue & 0x80) == 0x80;
   }
 
   /**
@@ -170,7 +196,7 @@ class GatewayDataDecoder {
   */
   static convertIsLastPacket(hexString) {
     const hexValue = parseInt(hexString, 16);
-    return hexValue & 0x40 == 0x40;
+    return (hexValue & 0x40) == 0x40;
   }
 
   /**
@@ -179,7 +205,7 @@ class GatewayDataDecoder {
   * @return {number} gateway's decoded battery voltage.
   */
   static convertBatteryVoltage(hexString) {
-    return parseInt(hexString, 16) / 1000; // mV => V
+    return parseInt(hexString, 16) / 100; // mV => V
   }
 
   /**
@@ -188,7 +214,7 @@ class GatewayDataDecoder {
   * @return {number} gateway's decoded power voltage.
   */
   static convertPowerVoltage(hexString) {
-    return parseInt(hexString, 16) / 1000; // mV => V
+    return parseInt(hexString, 16) / 100; // mV => V
   }
 
   /**
@@ -233,7 +259,7 @@ class GatewayDataDecoder {
   * @return {number} gateway's decoded packet index.
   */
   static convertPacketIndex(hexString) {
-    number parseInt(hexString, 16);
+    return parseInt(hexString, 16);
   }
 
   /**
@@ -251,9 +277,7 @@ class GatewayDataDecoder {
   * @return {boolean} gateway's decoded .
   */
   static convertStopSymbol(hexString) {
-    const firstCharHex = hexString.substring(0, 2);
-    const secondCharHex = hexString.substring(2, 4);
-    return hexToChar(firstCharHex) + hexToChar(secondCharHex);
+    return parseInt(hexString, 16);
   }
 
   /**
@@ -265,3 +289,5 @@ class GatewayDataDecoder {
     return String.fromCharCode(parseInt(hexString, 16));
   }
 }
+
+module.exports = GatewayDataDecoder;

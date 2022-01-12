@@ -38,14 +38,16 @@ class Tag {
   * prints the tag data to the console.
   */
   log() {
-    console.log(`Tag number: ${this.id}\n` +
-        `\tbatteryVoltageAlertStatus: ${batteryVoltageAlertStatus}\n` +
-        `\ttemperatureAlertStatus: ${temperatureAlertStatus}\n` +
-        `\tabnormalTemperatureStatus: ${abnormalTemperatureStatus}\n` +
-        `\thumidityAlertStatus: ${humidityAlertStatus}\n` +
-        `\tbatteryVoltage: ${batteryVoltage}\n` +
-        `\ttemperature: ${temperature}\n` +
-        `\thumidity: ${humidity}\n` +
-        `\trssi: ${rssi}`);
+    console.log(`Tag number: 0x${this.id.toString(16).padStart(8, '0')}\n` +
+        `\tbatteryVoltageAlertStatus: ${this.batteryVoltageAlertStatus}\n` +
+        `\ttemperatureAlertStatus: ${this.temperatureAlertStatus}\n` +
+        `\tabnormalTemperatureStatus: ${this.abnormalTemperatureStatus}\n` +
+        `\thumidityAlertStatus: ${this.humidityAlertStatus}\n` +
+        `\tbatteryVoltage: ${this.batteryVoltage}V\n` +
+        `\ttemperature: ${this.temperature}°C\n` +
+        `\thumidity: ${this.humidity}%\n` +
+        `\trssi: -${this.rssi}dBm`);
   }
 }
+
+module.exports = Tag;
