@@ -8,6 +8,7 @@ class Tag {
   * @param {boolean} batteryVoltageAlertStatus tag battery voltage alert status.
   * @param {boolean} temperatureAlertStatus tag temperature alert status.
   * @param {boolean} abnormalTemperatureStatus tag abnormal temperature status.
+  * @param {boolean} humidityAlertStatus tag humidity alert status.
   * @param {number} batteryVoltage tag battery voltage.
   * @param {number} temperature tag temperature.
   * @param {number} humidity tag humidity.

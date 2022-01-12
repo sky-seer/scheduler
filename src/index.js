@@ -7,12 +7,10 @@ const config = require('./config.json');
 const gatewayUrl = config.gatewayUrl;
 
 
-
-
 const checkAlreadyExistingData = function(id) {
   let i = 0;
-  while (i < gatewayDatas.length) {
-    if (gatewayDatas[i].id === id) {
+  while (i < gatewayDataRawArray.length) {
+    if (gatewayDataRawArray[i].id === id) {
       return true;
     }
     i++;
@@ -27,11 +25,11 @@ const getData = function() {
         response.data.forEach((item) => {
           if (!checkAlreadyExistingData(item[0])) {
             const gatewayData = new GatewayRawData(item[0], item[1], item[2]);
-            gatewayDatas.push(gatewayData);
+            gatewayDataRawArray.push(gatewayData);
           }
         });
         console.log('------------------------------');
-        gatewayDatas.forEach((item) => {
+        gatewayDataRawArray.forEach((item) => {
           item.log();
         });
       })
@@ -44,8 +42,8 @@ const getData = function() {
       });
 };
 
-const main = function () {
+const main = function() {
   schedule.scheduleJob('*/1 * * * *', getData);
-}
+};
 
-const gatewayDatas = [];
+const gatewayDataRawArray = [];

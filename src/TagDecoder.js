@@ -17,12 +17,14 @@ class TagDecoder {
     const batteryVoltage = this.convertBatteryVoltage(tagHexString.substring(10, 14));
     const temperature = this.convertTemperature(tagHexString.substring(14, 18));
     const humidity = this.convertHumidity(tagHexString.substring(18, 20));
+    const humidityAlertStatus = humidity == 0xFF;
     const rssi = this.convertRssi(tagHexString.substring(20, 22));
 
     return new tag.Tag(id,
         batteryVoltageAlertStatus,
         temperatureAlertStatus,
         abnormalTemperatureStatus,
+        humidityAlertStatus,
         batteryVoltage,
         temperature,
         humidity,

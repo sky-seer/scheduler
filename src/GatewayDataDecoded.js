@@ -1,3 +1,5 @@
+const tag = require('./Tag.js');
+
 /**
 * GatewayDataDecoded class.
 */
@@ -27,7 +29,7 @@ class GatewayDataDecoded {
   * @param {number} packetIndex gateway data's packet index.
   * @param {number} checkCode gateway data's check code.
   * @param {number} stopSymbol gateway data's stop symbol.
-  * @param {Tag[]} tags gateway's decoded tags as an array of Tag objects.
+  * @param {tag.Tag[]} tags gateway's decoded tags as an array of Tag objects.
   */
   constructor(id,
       date,
@@ -82,7 +84,29 @@ class GatewayDataDecoded {
   */
   log() {
     console.log(`Data number: ${this.id}\n` +
-        `Data: "${this.data}"\n` +
-        `Emitted: ${this.date}.`);
+        `Date: ${this.date}\n` +
+        `Start symbol: ${this.startSymbol}\n` +
+        `Packet length: ${this.packetLength}\n` +
+        `Protocol type: ${this.protocolType.toString(16)}\n` +
+        `Hardware type: ${this.hardwareType}\n` +
+        `Firmware version: ${this.firmwareVersion}\n` +
+        `IMEI: ${this.imei.toString(16)}\n` +
+        `RTC time: ${this.rtcTime.toString(16)}\n` +
+        `Status data length: ${this.statusDataLength}\n` +
+        `Alarm type: ${this.alarmType.toString(16)}\n` +
+        `Is connected to power: ${this.isConnectedToPower}\n` +
+        `Is last packet: ${this.isLastPacket}\n` +
+        `Battery voltage: ${this.batteryVoltage}\n` +
+        `Power voltage: ${this.powerVoltage}\n` +
+        `Tag information data length: ${this.tagInformationDataLength}\n` +
+        `Tag type: ${this.tagType}\n` +
+        `Number of tags: ${this.tagsNumber}\n` +
+        `Tag length: ${this.tagLength}\n` +
+        `Packet index: ${this.packetIndex}\n` +
+        `Check code: ${this.checkCode}\n` +
+        `Stop symbol: ${this.stopSymbol}.`);
+    this.tags.forEach((tag) => {
+      tag.log();
+    });
   }
 }
