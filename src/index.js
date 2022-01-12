@@ -1,18 +1,20 @@
 // modules import
 const schedule = require('node-schedule');
 const axios = require('axios');
+const GatewayDataRaw = require('./GatewayDataRaw.js');
+const GatewayDataDecoder = require('./GatewayDataDecoder.js');
 
 // configuration file import
 const config = require('./config.json');
 const gatewayUrl = config.gatewayUrl;
 
-
 const gatewayDataRawArray = [];
+const gatewayDataDecodedArray = [];
 
-const checkAlreadyExistingData = function(id) {
+const checkAlreadyExistingData = function(gatewayDataArray, id) {
   let i = 0;
-  while (i < gatewayDataRawArray.length) {
-    if (gatewayDataRawArray[i].id === id) {
+  while (i < gatewayDataArray.length) {
+    if (gatewayDataArray[i].id === id) {
       return true;
     }
     i++;
@@ -24,15 +26,30 @@ const getData = function() {
   axios.get(gatewayUrl)
       .then(function(response) {
         // handle success
+        console.log('*************');
+        console.log('Début du traitement planifié.');
         response.data.forEach((item) => {
-          if (!checkAlreadyExistingData(item[0])) {
-            const gatewayData = new GatewayRawData(item[0], item[1], item[2]);
+          if (!checkAlreadyExistingData(gatewayDataRawArray, item[0])) {
+            const gatewayData = new GatewayDataRaw(item[0], item[1], item[2]);
             gatewayDataRawArray.push(gatewayData);
           }
         });
-        console.log('------------------------------');
+        console.log('Affichage de chaque donnée brute récupérée :');
         gatewayDataRawArray.forEach((item) => {
           item.log();
+          console.log('------------');
+        });
+        console.log('Décodage de chaque donnée brute en donnée.');
+        gatewayDataRawArray.forEach((item) => {
+          if (!checkAlreadyExistingData(gatewayDataDecodedArray, item.id)) {
+            const gatewayDataDecoded = GatewayDataDecoder.decode(item);
+            gatewayDataDecodedArray.push(gatewayDataDecoded);
+          }
+        });
+        console.log('Affichage de chaque donnée décodée.');
+        gatewayDataDecodedArray.forEach((item) => {
+          item.log();
+          console.log('------------');
         });
       })
       .catch(function(error) {
@@ -45,7 +62,7 @@ const getData = function() {
 };
 
 const main = function() {
-  schedule.scheduleJob('*/1 * * * *', getData);
+  schedule.scheduleJob('*/4 * * * *', getData);
 };
 
 main();

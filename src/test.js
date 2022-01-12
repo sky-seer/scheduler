@@ -17,7 +17,7 @@ const testGatewayDataRaw = function() {
       gatewayDataRaw.rawData === gatewayDataElement[1] &&
       gatewayDataRaw.date === gatewayDataElement[2];
   console.log('test GatewayDataRaw instanciation: ' +
-     (check ? 'Pass' : 'FAILED'));
+     (check ? 'PASS' : 'FAILED'));
 };
 
 
