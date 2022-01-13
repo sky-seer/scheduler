@@ -1,8 +1,8 @@
 // modules import
 const schedule = require('node-schedule');
 const axios = require('axios');
-const GatewayDataRaw = require('./GatewayDataRaw.js');
-const GatewayDataDecoder = require('./GatewayDataDecoder.js');
+const GatewayDataRaw = require('common/GatewayDataRaw.js');
+const GatewayDataDecoder = require('common/GatewayDataDecoder.js');
 
 // configuration file import
 const config = require('./config.json');
