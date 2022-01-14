@@ -110,7 +110,7 @@ class TagDecoder {
   * @return {number} tag's decoded RSSI value.
   */
   static convertRssi(hexString) {
-    return parseInt(hexString, 16);
+    return -parseInt(hexString, 16);
   }
 }
 

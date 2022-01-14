@@ -46,7 +46,7 @@ class Tag {
         `\tbatteryVoltage: ${this.batteryVoltage}V\n` +
         `\ttemperature: ${this.temperature}°C\n` +
         `\thumidity: ${this.humidity}%\n` +
-        `\trssi: -${this.rssi}dBm`);
+        `\trssi: ${this.rssi}dBm`);
   }
 }
 
