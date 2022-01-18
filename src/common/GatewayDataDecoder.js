@@ -1,6 +1,4 @@
-const Tag = require('./Tag.js');
 const TagDecoder = require('./TagDecoder.js');
-const GatewayDataRaw = require('./GatewayDataRaw.js');
 const GatewayDataDecoded = require('./GatewayDataDecoded.js');
 
 /**
