@@ -1,5 +1,3 @@
-const Tag = require('./Tag.js');
-
 /**
 * GatewayDataDecoded class.
 */
@@ -87,8 +85,10 @@ class GatewayDataDecoded {
         `Date: ${this.date}\n` +
         `Start symbol: ${this.startSymbol}\n` +
         `Packet length: ${this.packetLength} bytes\n` +
-        `Protocol type: 0x${this.protocolType.toString(16).padStart(2, '0')}\n` +
-        `Hardware type: 0x${this.hardwareType.toString(16).padStart(4, '0')}\n` +
+        `Protocol type: 0x${
+          this.protocolType.toString(16).padStart(2, '0')}\n` +
+        `Hardware type: 0x${
+          this.hardwareType.toString(16).padStart(4, '0')}\n` +
         `Firmware version: ${this.firmwareVersion}\n` +
         `IMEI: ${this.imei}\n` +
         `RTC time: ${this.rtcTime}\n` +
@@ -98,7 +98,8 @@ class GatewayDataDecoded {
         `Is last packet: ${this.isLastPacket}\n` +
         `Battery voltage: ${this.batteryVoltage}V\n` +
         `Power voltage: ${this.powerVoltage}V\n` +
-        `Tag information data length: ${this.tagInformationDataLength} bytes\n` +
+        `Tag information data length: ${
+          this.tagInformationDataLength} bytes\n` +
         `Tag type: ${this.tagType.toString().padStart(2, '0')}\n` +
         `Number of tags: ${this.tagsNumber}\n` +
         `Tag length: 0x${this.tagLength.toString(16).padStart(2, '0')}\n` +

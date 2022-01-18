@@ -26,19 +26,24 @@ describe('test GatewayDataDecoder convertHardwareType', () => {
 
 describe('test GatewayDataDecoder convertFirmwareVersion', () => {
   test('convertFirmwareVersion', () => {
-    expect(GatewayDataDecoder.convertFirmwareVersion('02000000')).toBe('2.0.0.0');
+    expect(
+        GatewayDataDecoder.convertFirmwareVersion('02000000')).toBe('2.0.0.0');
   });
 });
 
 describe('test GatewayDataDecoder convertImei', () => {
   test('convertImei', () => {
-    expect(GatewayDataDecoder.convertImei('0641884907900001')).toBe('0x0641884907900001');
+    expect(
+        GatewayDataDecoder.convertImei('0641884907900001'),
+    ).toBe('0x0641884907900001');
   });
 });
 
 describe('test GatewayDataDecoder convertRtcTime', () => {
   test('convertRtcTime', () => {
-    expect(GatewayDataDecoder.convertRtcTime('120C0D021D11')).toBe('2018\\12\\13 02:29:17');
+    expect(
+        GatewayDataDecoder.convertRtcTime('120C0D021D11'),
+    ).toBe('2018\\12\\13 02:29:17');
   });
 });
 
