@@ -1,0 +1,3 @@
+[submodule "src/lib/psql-model"]
+	path = src/lib/psql-model
+	url = https://github.com/sky-seer/psql-model

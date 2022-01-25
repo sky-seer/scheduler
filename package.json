@@ -4,7 +4,7 @@
   "description": "Le scheduler pour le projet IOT CESI",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node src/service/SchedulerDecoder.js",
     "eslint": "eslint .",
     "test": "npm run eslint && jest test"
   },
@@ -21,7 +21,10 @@
   "homepage": "https://github.com/sky-seer/scheduler#readme",
   "dependencies": {
     "axios": "^0.24.0",
-    "node-schedule": "^2.1.0"
+    "bdd": "github:sky-seer/psql-model",
+    "dotenv": "^14.2.0",
+    "node-schedule": "^2.1.0",
+    "pg": "^8.7.1"
   },
   "devDependencies": {
     "eslint": "^8.4.1",

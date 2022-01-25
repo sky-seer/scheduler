@@ -1,0 +1,1 @@
+{"version":"1.0.0","name":"scheduler","dependencies":{"axios":{"version":"0.24.0"},"bdd":{"version":"1.0.0"},"dotenv":{"version":"14.2.0"},"node-schedule":{"version":"2.1.0"},"pg":{"version":"8.7.1"}}}

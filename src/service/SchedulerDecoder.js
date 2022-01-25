@@ -1,12 +1,14 @@
+require('dotenv').config();
 // modules import
 const schedule = require('node-schedule');
 const axios = require('axios');
+const {Client} = require('pg');
 const GatewayDataRaw = require('../common/GatewayDataRaw.js');
 const GatewayDataDecoder = require('../common/GatewayDataDecoder.js');
+const Utils = require('./../common/Utils.js');
 
-// configuration file import
-const config = require('../config.json');
-const gatewayUrl = config.gatewayUrl;
+const client = new Client();
+const utils = new Utils(client);
 
 const gatewayDataRawArray = [];
 const gatewayDataDecodedArray = [];
@@ -23,34 +25,73 @@ const checkAlreadyExistingData = function(gatewayDataArray, id) {
 };
 
 const getData = function() {
-  axios.get(gatewayUrl)
-      .then(function(response) {
+  axios.get(`http://app.objco.com:8099/?account=${process.env.TOKEN}&limit=10`)
+      .then(async function(response) {
+        let gatewayId;
+
+        // Check if gateway exist in database
+        let gateway = await utils.getGatewayByHost(
+            response.request.host, 'id');
+
+        if (gateway.rowCount === 0) {
+          await utils.insertGateway(response.request.host);
+          gateway = await utils.getGatewayByHost(
+              response.request.host, 'id');
+        };
+
+        gatewayId = gateway.rows[0].id;
+
         // handle success
         console.log('*************');
         console.log('Début du traitement planifié.');
-        response.data.forEach((item) => {
+        for (const item of response.data) {
           if (!checkAlreadyExistingData(gatewayDataRawArray, item[0])) {
             const gatewayData = new GatewayDataRaw(item[0], item[1], item[2]);
             gatewayDataRawArray.push(gatewayData);
           }
-        });
+        };
         console.log('Affichage de chaque donnée brute récupérée :');
-        gatewayDataRawArray.forEach((item) => {
+        for (const item of gatewayDataRawArray) {
           item.log();
           console.log('------------');
-        });
+        };
         console.log('Décodage de chaque donnée brute en donnée.');
-        gatewayDataRawArray.forEach((item) => {
+        for (const item of gatewayDataRawArray) {
           if (!checkAlreadyExistingData(gatewayDataDecodedArray, item.id)) {
             const gatewayDataDecoded = GatewayDataDecoder.decode(item);
             gatewayDataDecodedArray.push(gatewayDataDecoded);
           }
-        });
+        };
         console.log('Affichage de chaque donnée décodée.');
-        gatewayDataDecodedArray.forEach((item) => {
+        for (const item of gatewayDataDecodedArray) {
           item.log();
           console.log('------------');
-        });
+
+          const sensor = await utils.getSensorByImei(item.imei, 'id')
+              .then(async (result) => {
+                if (result.rowCount === 0) {
+                  await utils.insertSensor(
+                      item.imei,
+                      gatewayId,
+                      null,
+                      item.protocolType,
+                      item.hardwareType,
+                      item.batteryVoltage,
+                  );
+
+                  return await utils.getSensorByImei(item.imei, 'id');
+                }
+
+                return result;
+              });
+
+          const sensorId = sensor.rows[0].id;
+
+          await utils.insertRecord(
+            sensorId,
+            item.powerVoltage,
+            ''
+        };
       })
       .catch(function(error) {
         // handle error
@@ -61,8 +102,17 @@ const getData = function() {
       });
 };
 
-const main = function() {
-  schedule.scheduleJob('*/4 * * * *', getData);
+const main = async function() {
+  await client.connect()
+      .then(() => console.log('Connected to PostgreSQL database.'));
+
+  await utils.getRecords()
+      .then((res) => {
+        res.forEach((item) => gatewayDataRawArray.push(item));
+      });
+
+  // schedule.scheduleJob('*/1 * * * *', getData);
+  getData();
 };
 
 main();
