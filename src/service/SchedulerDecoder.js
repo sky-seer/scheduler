@@ -6,11 +6,13 @@ const GatewayDataDecoder = require('../common/GatewayDataDecoder.js');
 
 // configuration file import
 const config = require('../config.json');
+const { convertStatusDataLength } = require('../common/GatewayDataDecoder.js');
 const gatewayUrl = config.gatewayUrl;
 
 const gatewayDataRawArray = [];
 const gatewayDataDecodedArray = [];
 
+// teste si l'id existe déjà dans le tableau
 const checkAlreadyExistingData = function(gatewayDataArray, id) {
   let i = 0;
   while (i < gatewayDataArray.length) {
@@ -22,47 +24,54 @@ const checkAlreadyExistingData = function(gatewayDataArray, id) {
   return false;
 };
 
-const getData = function() {
-  axios.get(gatewayUrl)
-      .then(function(response) {
-        // handle success
-        console.log('*************');
-        console.log('Début du traitement planifié.');
-        response.data.forEach((item) => {
-          if (!checkAlreadyExistingData(gatewayDataRawArray, item[0])) {
-            const gatewayData = new GatewayDataRaw(item[0], item[1], item[2]);
-            gatewayDataRawArray.push(gatewayData);
-          }
-        });
-        console.log('Affichage de chaque donnée brute récupérée :');
-        gatewayDataRawArray.forEach((item) => {
-          item.log();
-          console.log('------------');
-        });
-        console.log('Décodage de chaque donnée brute en donnée.');
-        gatewayDataRawArray.forEach((item) => {
-          if (!checkAlreadyExistingData(gatewayDataDecodedArray, item.id)) {
-            const gatewayDataDecoded = GatewayDataDecoder.decode(item);
-            gatewayDataDecodedArray.push(gatewayDataDecoded);
-          }
-        });
-        console.log('Affichage de chaque donnée décodée.');
-        gatewayDataDecodedArray.forEach((item) => {
-          item.log();
-          console.log('------------');
-        });
-      })
-      .catch(function(error) {
-        // handle error
-        console.log(error);
-      })
-      .then(function() {
-        // always executed
-      });
+// stocke les données de la gateway dans un tableau
+const storeRawData = function(data) {
+  data.forEach((item) => {
+    if (!checkAlreadyExistingData(gatewayDataRawArray, item[0])) {
+      const gatewayData = new GatewayDataRaw(item[0], item[1], item[2]);
+      gatewayDataRawArray.push(gatewayData);
+    }
+  });
 };
 
+// convertit les données brutes en données exploitables
+const convertData = function() {
+  gatewayDataRawArray.forEach((item) => {
+    if (!checkAlreadyExistingData(gatewayDataDecodedArray, item.id)) {
+      const gatewayDataDecoded = GatewayDataDecoder.decode(item);
+      gatewayDataDecodedArray.push(gatewayDataDecoded);
+    }
+  });
+};
+
+// stocke les données exploitable dans la base de données
+const storeConvertedDataIntoDatabase = function() {
+
+};
+
+// fonction générale appelée à chaque accès à la gateway
+// appelle tour à tour les fonctions nécessaires au
+// décodage puis stockage en base
+const processResponse = function(response) {
+  storeRawData(response.data);
+  convertData();
+  storeConvertedDataIntoDatabase();
+};
+
+// requête et réponse de la gateway
+const getData = function() {
+  axios.get(gatewayUrl)
+      .then(processResponse)
+      .catch(function(error) {
+        console.log(error);
+      })
+      .then(function() {});
+};
+
+// planifie l'accès régulier à la gateway
 const main = function() {
   schedule.scheduleJob('*/4 * * * *', getData);
 };
 
+// lancement du processus général
 main();
