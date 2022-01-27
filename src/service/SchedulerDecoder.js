@@ -14,7 +14,7 @@ const gatewayDataDecodedArray = [];
 
 // teste si l'id existe déjà dans le tableau
 const checkAlreadyExistingData = function(gatewayDataArray, id) {
-  return gatewayDataArray.find((item) => item.id === id);
+  return gatewayDataArray.find((item) => item.id === id) !== undefined;
 };
 
 // stocke les données de la gateway dans un tableau
