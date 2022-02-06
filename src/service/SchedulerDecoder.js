@@ -1,8 +1,11 @@
+require('dotenv').config();
 // modules import
 const schedule = require('node-schedule');
 const axios = require('axios');
+const {Client} = require('pg');
 const GatewayDataRaw = require('../common/GatewayDataRaw.js');
 const GatewayDataDecoder = require('../common/GatewayDataDecoder.js');
+const Utils = require('./../common/Utils.js');
 
 // configuration file import
 const config = require('../config.json');
@@ -64,7 +67,6 @@ const getData = function() {
 // planifie l'accès régulier à la gateway
 const main = function() {
   schedule.scheduleJob('*/4 * * * *', getData);
-};
 
 // lancement du processus général
 main();
