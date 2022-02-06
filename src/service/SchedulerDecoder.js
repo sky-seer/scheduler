@@ -7,112 +7,66 @@ const GatewayDataRaw = require('../common/GatewayDataRaw.js');
 const GatewayDataDecoder = require('../common/GatewayDataDecoder.js');
 const Utils = require('./../common/Utils.js');
 
-const client = new Client();
-const utils = new Utils(client);
+// configuration file import
+const config = require('../config.json');
+const { convertStatusDataLength } = require('../common/GatewayDataDecoder.js');
+const gatewayUrl = config.gatewayUrl;
 
 const gatewayDataRawArray = [];
 const gatewayDataDecodedArray = [];
 
+// teste si l'id existe déjà dans le tableau
 const checkAlreadyExistingData = function(gatewayDataArray, id) {
-  let i = 0;
-  while (i < gatewayDataArray.length) {
-    if (gatewayDataArray[i].id === id) {
-      return true;
-    }
-    i++;
-  }
-  return false;
+  return gatewayDataArray.some((item) => item.id === id);
 };
 
+// stocke les données de la gateway dans un tableau
+const storeRawData = function(data) {
+  data.forEach((item) => {
+    if (!checkAlreadyExistingData(gatewayDataRawArray, item[0])) {
+      const gatewayData = new GatewayDataRaw(item[0], item[1], item[2]);
+      gatewayDataRawArray.push(gatewayData);
+    }
+  });
+};
+
+// convertit les données brutes en données exploitables
+const convertData = function() {
+  gatewayDataRawArray.forEach((item) => {
+    if (!checkAlreadyExistingData(gatewayDataDecodedArray, item.id)) {
+      const gatewayDataDecoded = GatewayDataDecoder.decode(item);
+      gatewayDataDecodedArray.push(gatewayDataDecoded);
+    }
+  });
+};
+
+// stocke les données exploitable dans la base de données
+const storeConvertedDataIntoDatabase = function() {
+
+};
+
+// fonction générale appelée à chaque accès à la gateway
+// appelle tour à tour les fonctions nécessaires au
+// décodage puis stockage en base
+const processResponse = function(response) {
+  storeRawData(response.data);
+  convertData();
+  storeConvertedDataIntoDatabase();
+};
+
+// requête et réponse de la gateway
 const getData = function() {
-  axios.get(`http://app.objco.com:8099/?account=${process.env.TOKEN}&limit=10`)
-      .then(async function(response) {
-        let gatewayId;
-
-        // Check if gateway exist in database
-        let gateway = await utils.getGatewayByHost(
-            response.request.host, 'id');
-
-        if (gateway.rowCount === 0) {
-          await utils.insertGateway(response.request.host);
-          gateway = await utils.getGatewayByHost(
-              response.request.host, 'id');
-        };
-
-        gatewayId = gateway.rows[0].id;
-
-        // handle success
-        console.log('*************');
-        console.log('Début du traitement planifié.');
-        for (const item of response.data) {
-          if (!checkAlreadyExistingData(gatewayDataRawArray, item[0])) {
-            const gatewayData = new GatewayDataRaw(item[0], item[1], item[2]);
-            gatewayDataRawArray.push(gatewayData);
-          }
-        };
-        console.log('Affichage de chaque donnée brute récupérée :');
-        for (const item of gatewayDataRawArray) {
-          item.log();
-          console.log('------------');
-        };
-        console.log('Décodage de chaque donnée brute en donnée.');
-        for (const item of gatewayDataRawArray) {
-          if (!checkAlreadyExistingData(gatewayDataDecodedArray, item.id)) {
-            const gatewayDataDecoded = GatewayDataDecoder.decode(item);
-            gatewayDataDecodedArray.push(gatewayDataDecoded);
-          }
-        };
-        console.log('Affichage de chaque donnée décodée.');
-        for (const item of gatewayDataDecodedArray) {
-          item.log();
-          console.log('------------');
-
-          const sensor = await utils.getSensorByImei(item.imei, 'id')
-              .then(async (result) => {
-                if (result.rowCount === 0) {
-                  await utils.insertSensor(
-                      item.imei,
-                      gatewayId,
-                      null,
-                      item.protocolType,
-                      item.hardwareType,
-                      item.batteryVoltage,
-                  );
-
-                  return await utils.getSensorByImei(item.imei, 'id');
-                }
-
-                return result;
-              });
-
-          const sensorId = sensor.rows[0].id;
-
-          await utils.insertRecord(
-            sensorId,
-            item.powerVoltage,
-            ''
-        };
-      })
+  axios.get(gatewayUrl)
+      .then(processResponse)
       .catch(function(error) {
-        // handle error
         console.log(error);
       })
-      .then(function() {
-        // always executed
-      });
+      .then(function() {});
 };
 
-const main = async function() {
-  await client.connect()
-      .then(() => console.log('Connected to PostgreSQL database.'));
+// planifie l'accès régulier à la gateway
+const main = function() {
+  schedule.scheduleJob('*/4 * * * *', getData);
 
-  await utils.getRecords()
-      .then((res) => {
-        res.forEach((item) => gatewayDataRawArray.push(item));
-      });
-
-  // schedule.scheduleJob('*/1 * * * *', getData);
-  getData();
-};
-
+// lancement du processus général
 main();
