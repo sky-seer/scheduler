@@ -25,7 +25,7 @@ const config = require('../config.json');
 const gatewayUrl = config.gatewayUrl;
 
 const gatewayDataRawArray = [];
-// const gatewayDataDecodedArray = [];
+const gatewayDataDecodedArray = [];
 
 // teste si l'id existe déjà dans le tableau
 const checkAlreadyExistingData = function(gatewayDataArray, id) {
@@ -45,8 +45,10 @@ const storeRawData = function(data) {
 // convertit les données brutes en données exploitables
 const convertData = function() {
   return gatewayDataRawArray.map((item) => {
-    const gatewayDataDecoded = GatewayDataDecoder.decode(item);
-    return gatewayDataDecoded;
+    if (!checkAlreadyExistingData(gatewayDataDecodedArray, item.id)) {
+      const gatewayDataDecoded = GatewayDataDecoder.decode(item);
+      return gatewayDataDecoded;
+    }
   });
 };
 
